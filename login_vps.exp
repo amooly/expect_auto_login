@@ -1,0 +1,33 @@
+#!/usr/bin/expect
+#version 0.1
+#作者：Mooly.xyz
+
+#参数说明：
+#   参数1： 远程host;
+#   参数2： 远程登陆账号;
+
+set timeout 30
+
+set HOST            [lindex $argv 0]
+set USER            [lindex $argv 1]
+
+spawn ssh $USER@$HOST
+expect {
+    "(yes/no)?"
+    {send "yes\n"; exp_continue}
+    "password:"
+    {
+        stty -echo
+        expect_user -re "(.*)\n"
+        send       "$expect_out(1,string)\n"
+    }
+}
+
+interact
+
+#历史变动
+#2015-11-29  13:00:
+#   出于安全考虑，采取用户密码自定义输入的方式。
+#2015-11-29  13:57
+#   增加对密码输入的隐藏
+#   针对ssh登陆的输出，调整输出结构。
